@@ -17,56 +17,51 @@ import java.util.Optional;
 @Service
 @Transactional
 public class AdminServiceImpl implements AdminService {
-@PersistenceContext
-   private EntityManager entityManager;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-private final
-UserRepository userRepository;
-@Autowired
+    private final
+    UserRepository userRepository;
+
+    @Autowired
     public AdminServiceImpl(BCryptPasswordEncoder bCryptPasswordEncoder, UserRepository userRepository) {
-    this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.userRepository = userRepository;
     }
-    public User getUserById(long id){
+
+    public User getUserById(long id) {
         Optional<User> userFromDb = userRepository.findById(id);
         return userFromDb.orElse(new User());
     }
 
-    public User getUserByName(String name){
+    public User getUserByName(String name) {
         return userRepository.findByUsername(name);
     }
-    public List<User> getUsers(){
+
+    public List<User> getUsers() {
         return userRepository.findAll();
     }
 
 
-@Transactional
-    public void addUser(User user){
-user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-//        user.setRoles(user.getRoles());
-//        user.setPassword(user.getPassword());
-//        user.setEmail(user.getEmail());
-//        user.setUsername(user.getUsername());
-userRepository.save(user);
+    @Transactional
+    public void addUser(User user) {
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        userRepository.save(user);
 
     }
+
     @Transactional
 
-    public void deleteUser (long userId){
-        if(userRepository.findById(userId).isPresent()){
+    public void deleteUser(long userId) {
+        if (userRepository.findById(userId).isPresent()) {
             userRepository.deleteById(userId);
         }
 
     }
+
     @Transactional
-    public void updateUser(long id,User user){
-//User toBeUpdate =getUserById(id);
-//toBeUpdate.setPassword(update.getPassword());
-//toBeUpdate.setUsername(update.getUsername());
-//toBeUpdate.setEmail(update.getEmail());
-//toBeUpdate.setRoles(update.getRoles());
-//return entityManager.merge(toBeUpdate);
+    public void updateUser(long id, User user) {
         Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isPresent()) {
             User editUser = optionalUser.get();
