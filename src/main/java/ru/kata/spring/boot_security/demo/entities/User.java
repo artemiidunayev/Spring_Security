@@ -6,14 +6,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.Collection;
-import java.util.List;
 
 
 @Entity
-@Table(name = "users")
+@Table(name = "user")
 public class User implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Column(name = "username")
@@ -22,9 +21,6 @@ public class User implements UserDetails {
     private String password;
     @Column(name = "email")
     private String email;
-    @Column(name = "role")
-    private String role;
-
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -34,20 +30,12 @@ public class User implements UserDetails {
     public User() {
     }
 
-    public User(String name, String password, String email, String role) {
-        this.username = name;
+    public User(long id, String username, String password, String email, Collection<Role> roles) {
+        this.id = id;
+        this.username = username;
         this.password = password;
         this.email = email;
-        this.role = role;
-
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
+        this.roles = roles;
     }
 
     public Collection<Role> getRoles() {

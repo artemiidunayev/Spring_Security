@@ -7,7 +7,7 @@
 <h1>User, welcome spring boot security page!</h1>
 <p th:text="${user.getId()}"> VALUE </p>
 <p th:text="${user.getEmail()}"> VALUE </p>
-<p th:test="${user.getPassword()}">VALUE</p>
+
 
 <br/>
 <a th:href="@{/admin/user/{id}/edit (id=${user.getId()})}">Edit</a>

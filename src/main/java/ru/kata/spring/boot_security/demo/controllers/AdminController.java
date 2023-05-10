@@ -6,7 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.kata.spring.boot_security.demo.entities.User;
 import ru.kata.spring.boot_security.demo.service.AdminService;
-
+import ru.kata.spring.boot_security.demo.service.RoleService;
 
 
 @Controller
@@ -14,11 +14,13 @@ import ru.kata.spring.boot_security.demo.service.AdminService;
 public class AdminController {
 
     private final AdminService adminService;
-
-    @Autowired
-    public AdminController(AdminService adminService){
+    private final RoleService roleService;
+@Autowired
+    public AdminController(AdminService adminService, RoleService roleService) {
         this.adminService = adminService;
+        this.roleService = roleService;
     }
+
 
     @GetMapping("/user")
     public String getUsers(Model model) {
@@ -33,8 +35,8 @@ public class AdminController {
     }
 
     @GetMapping("/new")
-    public String createNewUser(@ModelAttribute("user") User user) {
-
+    public String createNewUser(@ModelAttribute("user") User user,Model model) {
+        model.addAttribute("listRoles", roleService.getListRoles());
         return "new";
     }
 
@@ -45,7 +47,8 @@ public class AdminController {
     }
 
     @GetMapping("/user/{id}/edit")
-    public String edit (Model model,@PathVariable("id") int id){
+    public String edit (Model model,@PathVariable("id") int id, Model roles){
+        roles.addAttribute("listRoles", roleService.getListRoles());
         model.addAttribute("user", adminService.getUserById(id));
         return "edit";
     }

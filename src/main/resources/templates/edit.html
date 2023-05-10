@@ -33,9 +33,14 @@
         </div>
         <br/>
         <br/>
-        <div class="field">
-            <label for="role">Enter role: </label>
-            <input type="text" th:field="*{role}" id="role"/>
+        <div class="form-group row align-items-center mb-3">
+            <label class="col-4 col-form-label text-center">Roles: </label>
+            <div class="col-8">
+                <th:block th:each="role: ${listRoles}">
+                    <input type="checkbox" th:field="*{roles}"
+                           th:text="${role.name}" th:value="${role.id}" class="m-2"/>
+                </th:block>
+            </div>
         </div>
         <br/>
         <input type="submit" value="Update!"/>

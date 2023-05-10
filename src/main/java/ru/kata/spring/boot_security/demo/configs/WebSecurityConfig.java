@@ -9,24 +9,21 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import ru.kata.spring.boot_security.demo.service.CustomUserDetailService;
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
     private final SuccessUserHandler successUserHandler;
-    @Autowired
-private CustomUserDetailService customUserDetailService;
+    private final CustomUserDetailService customUserDetailService;
 
-
-
-
-    public WebSecurityConfig(SuccessUserHandler successUserHandler) {
+@Autowired
+    public WebSecurityConfig(SuccessUserHandler successUserHandler, CustomUserDetailService customUserDetailService) {
         this.successUserHandler = successUserHandler;
-    }
-
-    public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception{
-        authenticationManagerBuilder.userDetailsService(customUserDetailService);
+        this.customUserDetailService = customUserDetailService;
     }
 
 
@@ -44,38 +41,21 @@ private CustomUserDetailService customUserDetailService;
                 .and()
                 .logout()
                 .logoutUrl("/logout").logoutSuccessUrl("/login")
-                .permitAll();
+                .permitAll()
+                .and()
+                .csrf().disable();
     }
 
-//    @Bean
-//    public BCryptPasswordEncoder bCryptPasswordEncoder() {
-//        return new BCryptPasswordEncoder();
-//    }
-//
-//    @Bean
-//    public DaoAuthenticationProvider daoAuthenticationProvider() {
-//        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-//        authenticationProvider.setPasswordEncoder(bCryptPasswordEncoder());
-//        authenticationProvider.setUserDetailsService(customUserDetailService);
-//        return authenticationProvider;
+    @Bean
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+        return new BCryptPasswordEncoder();
     }
-    // аутентификация inMemory
-//    @Bean
-//
-//    public UserDetails userDetailsService(String username)  {
-//
-//        User myUser = userRepository.findByUsername()
-//        UserDetails user =
-//                User.builder()
-//                        .username("user")
-//                        .password("user")
-//                        .roles("USER")
-//                        .build();
-//        UserDetails admin = User.builder()
-//                .username("admin")
-//                .password("admin")
-//                .roles("ADMIN","USER")
-//                .build();
-//
-//        return new InMemoryUserDetailsManager(user,admin);
-//    }
+       @Bean
+    public DaoAuthenticationProvider daoAuthenticationProvider() {
+        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+        authenticationProvider.setPasswordEncoder(bCryptPasswordEncoder());
+        authenticationProvider.setUserDetailsService(customUserDetailService);
+        return authenticationProvider;
+    }
+}
+
